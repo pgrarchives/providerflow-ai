@@ -1,0 +1,15 @@
+# Web framework and server
+fastapi
+uvicorn
+
+# LangChain core and specific integrations
+langchain
+langchain-community
+langchain-google-vertexai
+
+# Google Cloud SDK for Vertex AI
+google-cloud-aiplatform
+
+# PostgreSQL database driver and ORM
+SQLAlchemy
+pg8000
