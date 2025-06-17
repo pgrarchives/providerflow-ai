@@ -23,4 +23,4 @@ COPY . .
 # --host 0.0.0.0 makes the server accessible from outside the container.
 # --port $PORT is critical for Cloud Run, which injects the port number
 # it wants the container to listen on into this environment variable.
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "$PORT"]
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT
