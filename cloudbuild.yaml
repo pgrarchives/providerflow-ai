@@ -1,0 +1,33 @@
+# cloudbuild.yaml
+steps:
+  # Step 1: Build the container image using the Dockerfile.
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/providerflow-repo/providerflow-api:${COMMIT_SHA}', '.']
+
+  # Step 2: Push the container image to Google Artifact Registry.
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/providerflow-repo/providerflow-api:${COMMIT_SHA}']
+
+  # Step 3: Deploy the new container image to Cloud Run.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'providerflow-api' # This will be the name of your Cloud Run service.
+      - '--image'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/providerflow-repo/providerflow-api:${COMMIT_SHA}'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--set-secrets=DB_USER=db_user:latest,DB_PASS=db_password:latest,INSTANCE_CONNECTION_NAME=db_instance_connection_name:latest'
+      - '--add-cloudsql-instances'
+      - '${_INSTANCE_CONNECTION_NAME}'
+
+substitutions:
+  _INSTANCE_CONNECTION_NAME: 'centered-flow-461314-v3:us-central1:root' # Make sure this value is correct
+
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/providerflow-repo/providerflow-api:${COMMIT_SHA}'
